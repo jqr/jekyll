@@ -43,15 +43,14 @@ require 'jekyll/tags/include'
 require 'jekyll/albino'
 
 module Jekyll
-  VERSION = '0.3.0'
-  
   class << self
-    attr_accessor :source, :dest, :lsi, :pygments, :markdown_proc
+    attr_accessor :source, :dest, :lsi, :pygments, :markdown_proc, :content_type, :permalink_style
   end
   
   Jekyll.lsi = false
   Jekyll.pygments = false
   Jekyll.markdown_proc = Proc.new { |x| Maruku.new(x).to_html }
+  Jekyll.permalink_style = :date
   
   def self.process(source, dest)
     require 'classifier' if Jekyll.lsi
@@ -59,5 +58,10 @@ module Jekyll
     Jekyll.source = source
     Jekyll.dest = dest
     Jekyll::Site.new(source, dest).process
+  end
+  
+  def self.version
+    yml = YAML.load(File.read(File.join(File.dirname(__FILE__), *%w[.. VERSION.yml])))
+    "#{yml[:major]}.#{yml[:minor]}.#{yml[:patch]}"
   end
 end
